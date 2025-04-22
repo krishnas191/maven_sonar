@@ -6,7 +6,7 @@ pipeline {
     stages{
     stage("collect code from git"){
             steps{
-            git credentialsId: 'git_credentials', url:'https://github.com/krishnas191/icuk-21.git'
+            git credentialsId: 'git_credentials', url:'https://github.com/krishnas191/maven_sonar.git'
            }
         }    
         stage("build code"){
