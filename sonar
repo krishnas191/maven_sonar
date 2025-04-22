@@ -16,8 +16,10 @@ pipeline {
         }
         stage("unit test") {
             steps{
-                sh "mvn test"
+              withSonarQubeEnv('sonarqube') {
+               sh "mvn test"
             }
+          }
         }
     }
 }
