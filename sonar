@@ -1,29 +1,37 @@
 pipeline {
     agent any
-    environment {
-        scannerHome = tool 'ALM Sonar';
+    tools {
+        maven 'maven'
     }
+    
     stages {
-        stage('SCM') {
+        stage('Checkout Code') {
             steps {
-                git branch: 'master',
-                    credentialsId: 'github',
-                    url: 'https://github.com/krishnas191/maven_sonar.git'
+                git 'https://github.com/krishnas191/maven_sonar.git' // Use your Git repository URL
             }
         }
-        stage('Sonarqube Analysis') {
+        
+        stage('Build') {
             steps {
-                withSonarQubeEnv('sonarqube') {
-                    sh "${scannerHome}/bin/sonar-scanner"
-                }
+                sh 'mvn compile'
             }
         }
-        stage("Quality Gate") {
+        
+        stage('Test') {
             steps {
-                timeout(time: 1, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
+                sh 'mvn test'
             }
         }
+        
+        stage('SonarQube Analysis') {
+            environment {
+                SONAR_HOST_URL = 'http://18.212.14.16:9000/' // Replace with your SonarQube URL
+                SONAR_AUTH_TOKEN = credentials('sonarqube') // Store your token in Jenkins credentials
+            }
+            steps {
+                sh 'mvn sonar:sonar -Dsonar.projectKey=sample_project -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_AUTH_TOKEN'
+            }
+        }
+        
     }
 }
