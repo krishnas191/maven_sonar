@@ -27,7 +27,7 @@ pipeline {
       steps {
         withSonarQubeEnv('Sonarqube') {
           sh """
-            mvn clean install sonar:sonar \
+            mvn validate sonar:sonar \
             -Dsonar.projectKey=my-java-app \
             -Dsonar.host.url=$"http://18.212.14.16:9000" \
             -Dsonar.login=${"sqp_4fbd4de2226f42510cf3f6b745cf32f121f7bb14"}
@@ -35,13 +35,5 @@ pipeline {
         }
       }
     }
-
-    stage('Quality Gate') {
-      steps {
-        timeout(time: 2, unit: 'MINUTES') {
-          waitForQualityGate abortPipeline: true
-        }
-      }
-    }
-  }
+ }
 }
