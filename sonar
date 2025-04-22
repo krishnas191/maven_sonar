@@ -1,39 +1,37 @@
 pipeline {
-    agent any
-    tools {
-        maven 'maven'
+  agent any
+
+  environment {
+    SONAR_TOKEN = credentials('sqp_4fbd4de2226f42510cf3f6b745cf32f121f7bb14')
+    SONAR_HOST_URL = 'http://18.212.14.16:9000/'
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        git url: 'https://github.com/krishnas191/maven_sonar.git'
+      }
     }
-    
-    stages {
-        stage('Checkout Code') {
-            steps {
-                git 'https://github.com/krishnas191/maven_sonar.git' // Use your Git repository URL
-            }
-        }
-        
-        stage('Build') {
-            steps {
-                sh 'mvn compile'
-            }
-        }
-        
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
-        }
-        
-        stage('SonarQube Analysis') {
+
+    stage('SonarQube Analysis') {
       steps {
         withSonarQubeEnv('Sonarqube') {
           sh """
-            mvn validate sonar:sonar \
+            mvn clean verify sonar:sonar \
             -Dsonar.projectKey=my-java-app \
-            -Dsonar.host.url=$"http://18.212.14.16:9000" \
-            -Dsonar.login=${"sqp_4fbd4de2226f42510cf3f6b745cf32f121f7bb14"}
+            -Dsonar.host.url=${"http://18.212.14.16:9000"} \
+            -Dsonar.login=${'sqp_1f755e992fbd4cc9345988da37160322bb200058'}
           """
         }
       }
     }
- }
+
+    stage('Quality Gate') {
+      steps {
+        timeout(time: 2, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
+        }
+      }
+    }
+  }
 }
