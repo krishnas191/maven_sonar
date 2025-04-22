@@ -1,11 +1,11 @@
- pipeline {
+     pipeline {
         agent none
         stages {
          
-          stage("build & sonarqube") {
+          stage("build & SonarQube Analysis") {
             agent any
             steps {
-              withSonarQubeEnv('Sona_TOKEN') {
+              withSonarQubeEnv('sonarqube') {
                 sh 'mvn clean package sonar:sonar'
               }
             }
