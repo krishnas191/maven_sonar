@@ -6,7 +6,10 @@
             agent any
             steps {
               withSonarQubeEnv('sonarqube') {
-                sh 'mvn clean install sonar:sonar'
+                mvn clean verify sonar:sonar \
+                Dsonar.projectKey=maven-sonar \
+               Dsonar.host.url=http://18.212.14.16:9000 \
+               Dsonar.login=sqp_6c440f32c4e9b8d00a3818635821ad978a38348d
               }
             }
           }
