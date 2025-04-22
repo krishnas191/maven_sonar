@@ -17,7 +17,10 @@ pipeline {
         stage("unit test") {
             steps{
               withSonarQubeEnv('sonarqube') {
-               sh "mvn test"
+               sh mvn clean verify sonar:sonar \
+              -Dsonar.projectKey=maven-sonar \
+              -Dsonar.host.url=http://18.212.14.16:9000 \
+              -Dsonar.login=sqp_dea2d9aa50c00a7b9ac82b9d93d257179ef43806
             }
           }
         }
