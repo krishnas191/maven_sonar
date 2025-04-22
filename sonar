@@ -1,14 +1,23 @@
-     pipeline {
-        agent none
-        stages {
-         
-          stage("build & SonarQube Analysis") {
-            agent any
-            steps {
-              withSonarQubeEnv('sonarqube') {
-                sh "mvn clean verify sonar:sonar"
-              }
+pipeline {
+    agent any
+    environment {
+        PATH = "/opt/maven1/bin:${PATH}"
+    }
+    stages{
+    stage("collect code from git"){
+            steps{
+            git credentialsId: 'git_credentials', url:'https://github.com/krishnas191/icuk-21.git'
+           }
+        }    
+        stage("build code"){
+            steps{
+            sh "mvn install" 
             }
-          }
         }
-      }
+        stage("unit test") {
+            steps{
+                sh "mvn test"
+            }
+        }
+    }
+}
